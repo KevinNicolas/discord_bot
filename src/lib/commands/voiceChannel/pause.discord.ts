@@ -1,13 +1,14 @@
 import Discord from 'discord.js'
 import DisTube from 'distube'
+import { botData } from '../../../types/command'
 
 module.exports = {
   name: 'pause',
   description: 'Pause la musica que se encuentra en reproducción',
-  execute (distube: DisTube, message: Discord.Message): Promise<void> {
+  execute (args: Array<string>,  botData: botData): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        distube.pause(message)
+        botData.disTube.pause(botData.message)
         resolve()
       } catch(e) {
         reject(e)

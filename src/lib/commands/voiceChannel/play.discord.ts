@@ -1,13 +1,15 @@
 import { voiceMessage } from '../../../types/command'
+import { botData } from '../../../types/command'
 
 module.exports = {
   name: 'play',
   description: 'Reproduce musica',
-  execute (song: string, voiceMessage: voiceMessage): Promise<void> {
+  execute (args: Array<string>,  botData: botData): Promise<void> {
+    const song = args.join()
     console.log('Playing:', song)
     return new Promise( async (resolve, reject) => {
       try {  
-        await voiceMessage.disTube.play(voiceMessage.message, song)
+        await botData.disTube.play(botData.message, song)
         resolve()
       } catch(e) {
         reject(e)

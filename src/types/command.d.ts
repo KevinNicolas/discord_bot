@@ -1,12 +1,14 @@
 import Discord from 'discord.js'
 import DisTube from 'distube'
 
+export type botData = message & voiceMessage?
+
 export type message = {
   client: Discord.Client,
   message: Discord.Message
 }
 
 export type voiceMessage = message & {
-  voiceConnection: Discord.VoiceConnection
+  voiceConnection?: Discord.VoiceConnection
   disTube: DisTube
 }
