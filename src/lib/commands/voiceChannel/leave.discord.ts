@@ -1,13 +1,13 @@
 import Discord from 'discord.js'
-import { voiceMessage } from '../../../types/command'
+import { botData } from '../../../types/command'
 
 module.exports = {
   name: 'leave',
   description: 'Abandona el canal de voz en el que se encuentra',
-  execute (voiceMessage: voiceMessage): Promise<void> {
+  execute (args: Array<string>,  botData: botData): Promise<void> {
     return new Promise (async (resolve, reject) => {
       try {
-        voiceMessage.voiceConnection.disconnect()
+        botData.voiceConnection && botData.voiceConnection.disconnect()
         resolve()
       } catch (e) {
         reject(e)
