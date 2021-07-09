@@ -15,8 +15,6 @@ client.once('ready', () => {
 client.on('message', async message => {
   if (message.content.startsWith(process.env.PREFIX || '!!webhook')) {
     bot.run(message)
-  } else if (message.content === 'Di hola anivia') {
-    message.channel.send('Hola mundo :D')
   }
 
   const channel: Discord.TextChannel | undefined = bot.getClient().channels.cache.find(channel => channel.id === '862138521018826782') as Discord.TextChannel
