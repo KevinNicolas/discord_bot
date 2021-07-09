@@ -7,7 +7,8 @@ module.exports = {
   execute (args: Array<string>,  botData: botData): Promise<void> {
     return new Promise (async (resolve, reject) => {
       try {
-        botData.voiceConnection && botData.voiceConnection.disconnect()
+        if (botData.voiceConnection) botData.voiceConnection.disconnect()
+        else console.log('[VoiceChannel.Leave] - Sin voice connection...')
         resolve()
       } catch (e) {
         reject(e)

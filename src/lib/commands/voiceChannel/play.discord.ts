@@ -5,7 +5,7 @@ module.exports = {
   name: 'play',
   description: 'Reproduce musica',
   execute (args: Array<string>,  botData: botData): Promise<void> {
-    const song = args.join()
+    const song = args.join(' ')
     console.log('Playing:', song)
     return new Promise( async (resolve, reject) => {
       try {  
