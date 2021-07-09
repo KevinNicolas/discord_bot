@@ -1,5 +1,5 @@
-import { voiceMessage } from '../../../types/command'
-import { botData } from '../../../types/command'
+import Discord from 'discord.js'
+import { botData } from '~/types/command'
 
 module.exports = {
   name: 'play',
@@ -10,6 +10,12 @@ module.exports = {
     return new Promise( async (resolve, reject) => {
       try {  
         await botData.disTube.play(botData.message, song)
+        const queue: any = botData.disTube.getQueue(botData.message).songs[0]
+        await botData.message.channel.send(`
+          > Reproduciendo: ${queue.name} || ${queue.url}  ${queue.formattedDuration}
+        
+        `)
+        console.log(queue)
         resolve()
       } catch(e) {
         reject(e)

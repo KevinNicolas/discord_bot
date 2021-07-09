@@ -1,5 +1,5 @@
 import Discord from 'discord.js'
-import { botData } from '../../../types/command'
+import { botData } from '~/types/command'
 
 module.exports = {
   name: 'join',

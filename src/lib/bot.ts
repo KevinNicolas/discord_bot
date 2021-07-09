@@ -23,7 +23,6 @@ export default class Bot {
       leaveOnEmpty: false,
       leaveOnFinish: false,
     })
-
     this.commands = this._mountCommands();
   }
 
@@ -31,41 +30,11 @@ export default class Bot {
     return new Promise ( async (resolve, reject) => {
       try {
         const args: Array<string> = await this._toArguments(message.content)
-        switch(args[0]) {
-          case 'ping': message.channel.send(`Pong!!! ${message.guild?.name}`); break
-          case 'webhook': {
-            if (this.commands.has(args[1]) && this.message) {
-              await this._runCommand(this.message, args.splice(1))
-            } else {
-              if (args[1] === 'init') this.message = message
-              else console.log('Comando deconocido...')
-            }
-          }break
-          default: {
-            if (this.commands.has(args[0]))
-              await this._runCommand(message, args)
-            else {
-              console.log('Comando deconocido...')
-              message.channel.send('Comando desconocido...')
-            }
-              
-          }
-        }
+        if(args[0].toLowerCase() !== 'init') await this._runCommand(message, args)
+        else this.message = message
         resolve()
       } catch (e) {
         reject(e)
-      }
-    })
-  }
-
-  public runRabbitCommand(message: Discord.Message): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        console.log(message)
-        resolve()
-      } catch (e) {
-        reject(e)
-        console.log('[Bot.runRabbitCommand] - Error...')
       }
     })
   }
@@ -86,16 +55,30 @@ export default class Bot {
   private _runCommand(message: Discord.Message, args: Array<string>): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        const botData: botData = {
-          client: this.client,
-          message: message,
-          disTube: this.distube,
-          voiceConnection: this.voiceConnection
+        const isCommonCommand: Boolean = this.commands.has(args[0])
+        const isWebhookCommand: Boolean = args[0].toLowerCase() === 'webhook' && this.commands.has(args[1])
+        if ( isCommonCommand || (isWebhookCommand && this.message) ) {
+          const botData: botData = {
+            client: this.client,
+            message: isCommonCommand ? message : this.message || message,
+            disTube: this.distube,
+            voiceConnection: this.voiceConnection
+          }
+          if (isWebhookCommand) args = args.slice(1)
+          const returnData = await this.commands.get(args[0]).execute(args.splice(1), botData)
+          
+          if (args[0].toLowerCase() === 'join') {this.voiceConnection = returnData; console.log('Save info')}
+          
+          resolve()
+        } else {
+          if (isWebhookCommand && !this.message) message.channel.send('No es posible utilizar webhook...')
+          else {
+            console.log('Comando deconocido...')
+            message.channel.send('Comando desconocido...')
+          }
         }
-        const returnData = await this.commands.get(args[0]).execute(args.splice(1), botData)
-        if (args[0].toLowerCase() === 'join') {this.voiceConnection = returnData; console.log('Save info')}
-        resolve()
       } catch (e) {
+        reject(e)
         console.log('[Bot._runCommand] - Error')
       }
     })
