@@ -31,7 +31,11 @@ export default class Bot implements IBot {
     return new Promise(async (resolve, reject) => {
       try {
         const args: Array<string> = await this._toArguments(message.content)
+<<<<<<< HEAD
         if (args[0].toLowerCase() !== 'init') await this._runCommand(message, args)
+=======
+        if(args[0].toLowerCase() !== 'init') await this._runCommand(message, args)
+>>>>>>> a70ecfb370a9b799496b168f54df89a8f9403275
         else this.message = message
         resolve()
       } catch (e) {
