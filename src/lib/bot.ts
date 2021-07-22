@@ -1,23 +1,24 @@
 import Discord from 'discord.js'
 import DisTube from 'distube'
 import { botData } from '../types/command'
+import IBot from './IBot'
 
 import Fs from 'fs'
 import path from 'path'
 
 
-export default class Bot {
-  
+export default class Bot implements IBot {
+
   private client: Discord.Client
   private distube: DisTube
   private voiceConnection?: Discord.VoiceConnection
   private commands: Discord.Collection<any, any>
   private message?: Discord.Message
-  
-  public constructor(cliente: Discord.Client) { 
-    
+
+  public constructor(cliente: Discord.Client) {
+
     this.client = cliente
-    
+
     this.distube = new DisTube(this.client, {
       emitNewSongOnly: true,
       leaveOnEmpty: false,
@@ -27,10 +28,10 @@ export default class Bot {
   }
 
   public run(message: Discord.Message): Promise<void> {
-    return new Promise ( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const args: Array<string> = await this._toArguments(message.content)
-        if(args[0].toLowerCase() !== 'init') await this._runCommand(message, args)
+        if (args[0].toLowerCase() !== 'init') await this._runCommand(message, args)
         else this.message = message
         resolve()
       } catch (e) {
@@ -40,7 +41,7 @@ export default class Bot {
   }
 
   private _toArguments(message: string): Promise<Array<string>> {
-    return new Promise (async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const args = message.slice(process.env.PREFIX?.length || 2).trim().split(/ +/);
         console.log('Argumentos:', args)
@@ -57,7 +58,7 @@ export default class Bot {
       try {
         const isCommonCommand: Boolean = this.commands.has(args[0])
         const isWebhookCommand: Boolean = args[0].toLowerCase() === 'webhook' && this.commands.has(args[1])
-        if ( isCommonCommand || (isWebhookCommand && this.message) ) {
+        if (isCommonCommand || (isWebhookCommand && this.message)) {
           const botData: botData = {
             client: this.client,
             message: isCommonCommand ? message : this.message || message,
@@ -66,9 +67,9 @@ export default class Bot {
           }
           if (isWebhookCommand) args = args.slice(1)
           const returnData = await this.commands.get(args[0]).execute(args.splice(1), botData)
-          
-          if (args[0].toLowerCase() === 'join') {this.voiceConnection = returnData; console.log('Save info')}
-          
+
+          if (args[0].toLowerCase() === 'join') { this.voiceConnection = returnData; }
+
           resolve()
         } else {
           if (isWebhookCommand && !this.message) message.channel.send('No es posible utilizar webhook...')
@@ -90,9 +91,9 @@ export default class Bot {
     const commandFolders: Array<string> = Fs.readdirSync(
       path.resolve(__dirname, './commands/')
     )
-    
+
     console.log()
-    for(let folder of commandFolders) {
+    for (let folder of commandFolders) {
       console.log(`Carpeta ${folder}`)
       const commandFiles: Array<string> = Fs.readdirSync(
         path.resolve(__dirname, `./commands/${folder}`)).filter(file => file.endsWith('.discord.ts'))
